@@ -13,7 +13,7 @@ static char const* const strings_fijos[CANT_STRINGS_FIJOS] = { "salir", "cargar"
 static TokenTag const token_strings_fijos[CANT_STRINGS_FIJOS] = { T_SALIR, T_CARGAR, T_EVALUAR, T_IMPRIMIR };
 
 Tokenizado tokenizar(char const* str, TablaOps* tabla_ops) {
-	// TODO: reconocer operadores
+	// NICETOHAVE soportar operadores alfanumericos
 
 	while (isspace(*str))
 		str += 1;
@@ -21,12 +21,12 @@ Tokenizado tokenizar(char const* str, TablaOps* tabla_ops) {
 	if (*str == '\0')
 		return (Tokenizado){str, (Token){T_FIN}};
 
-	// NICETOHAVE chequear si hay un operador que arranca con =
+	// NICETOHAVE soportar operadores que empiezan con =
 	if (*str == '=')
 		return (Tokenizado){str+1, (Token){T_IGUAL}};
 
+	// reconozco un nombre
 	if (isalpha(str[0])) {
-		// reconozco un nombre
 		int largo = 1;
 		while (isalnum(str[largo]))
 			largo += 1;
@@ -39,8 +39,8 @@ Tokenizado tokenizar(char const* str, TablaOps* tabla_ops) {
 		return (Tokenizado){str+largo, (Token){T_NOMBRE, str, largo}};
 	}
 
+	// reconozco un numero
 	if (isdigit(str[0])) {
-		// reconozco un numero
 		int valor = str[0] - '0';
 		int largo = 1;
 		while (isdigit(str[largo])) {
@@ -50,6 +50,36 @@ Tokenizado tokenizar(char const* str, TablaOps* tabla_ops) {
 
 		return (Tokenizado){str+largo, (Token){T_NUMERO, NULL, valor}};
 	}
+
+	{
+		// reconozco un operador (el mas largo que matchee)
+		EntradaTablaOps* op_que_matchea = NULL;
+		int largo_de_op_que_matchea = 0;
+		for (EntradaTablaOps* it = tabla_ops->entradas; it; it = it->sig) {
+			int largo_de_op = strlen(it->simbolo);
+
+			if (largo_de_op < largo_de_op_que_matchea)
+				continue;
+
+			int matchea = 1;
+			for (int i = 0; i < largo_de_op; ++i) {
+				if (str[i] != it->simbolo[i]) {
+					matchea = 0;
+					break;
+				}
+			}
+
+			if (matchea) {
+				op_que_matchea = it;
+				largo_de_op_que_matchea = largo_de_op;
+			}
+		}
+
+		if (op_que_matchea != NULL)
+			return (Tokenizado){str+largo_de_op_que_matchea, (Token){T_OPERADOR, NULL, 0, op_que_matchea}};
+	}
+
+	return (Tokenizado){str, (Token){T_INVALIDO}};
 }
 
 static Parseado invalido(char const* str) {
