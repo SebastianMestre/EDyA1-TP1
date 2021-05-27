@@ -15,8 +15,8 @@ typedef enum {
 
 struct Expresion {
 	ExpressionTag tag;
-	char const* alias; // para guardar el texto de un alias
 	int valor; // para guardar los valores numericos, o la longitud de un alias, dependiendo del tag
+	char const* alias; // para guardar el texto de un alias
 	Expresion* sub[2]; // para guardar las sub-expresiones de una operacion
 	FuncionEvaluacion eval; // para guardar el tipo de operacion
 };

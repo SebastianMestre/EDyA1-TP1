@@ -1,10 +1,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "expresion_postfija.h"
-
 typedef struct TablaOps TablaOps;
 typedef struct EntradaTablaOps EntradaTablaOps;
+typedef struct Expresion Expresion;
 
 // En el contexto de un token, sirve para interpretar la informacion que este guarda
 typedef enum {
@@ -47,7 +46,7 @@ typedef struct Sentencia {
 	SentenciaTag tag;
 	char const* alias;
 	int alias_n;
-	ExpresionPostfija expresion;
+	Expresion* expresion;
 } Sentencia;
 
 typedef struct {

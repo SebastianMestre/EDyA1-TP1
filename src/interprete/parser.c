@@ -1,6 +1,7 @@
 #include "parser.h"
 
 #include "tabla_ops.h"
+#include "expresion.h"
 
 #include <ctype.h>
 #include <string.h>
@@ -100,9 +101,7 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 		// la memoria necesaria para guardarlos
 		// Y la segunda para guardarlos en la memoria que reserve
 
-		char const* str_al_principio_de_la_expresion = str;
-		int tokens_en_la_expresion = 0;
-
+		// Pila p = pila_crear();
 		// parseo y, mientras, voy validando
 		while (1) {
 			tokenizado = tokenizar(str, tabla_ops);
@@ -112,25 +111,36 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 			if (token.tag == T_FIN)
 				break;
 
-			if (!(token.tag == T_NUMERO || token.tag == T_NOMBRE || token.tag == T_OPERADOR))
+			switch (token.tag) {
+			case T_NUMERO: {
+				Expresion* exp = malloc(sizeof(*exp));
+				*exp = (Expresion){X_NUMERO, token.valor};
+				// pila_push(&p, exp);
+				} break;
+			case T_NOMBRE: {
+				Expresion* exp = malloc(sizeof(*exp));
+				*exp = (Expresion){X_ALIAS, token.valor, token.inicio};
+				// pila_push(&p, exp);
+				} break;
+			case T_OPERADOR: {
+				Expresion* exp = malloc(sizeof(*exp));
+				Expresion* arg1 = /* pila_pop(&p); */ NULL;
+				Expresion* arg2 = /* token.op->aridad == 2 ? pila_pop(&p) : */ NULL;
+				*exp = (Expresion){
+					X_OPERACION,
+					0, NULL,
+					{arg1, arg2},
+					token.op->eval
+				};
+				// pila_push(&p, exp);
+				} break;
+			default:
+				// TODO limpiar
 				return invalido(str);
-
-			tokens_en_la_expresion += 1;
+			}
 		}
 
-		ExpresionPostfija expresion = {
-			tokens_en_la_expresion,
-			malloc(tokens_en_la_expresion * sizeof(Token)),
-		};
-
-		// no necesito validar porque ya valide en el loop anterior
-		for (int i = 0; i < tokens_en_la_expresion; ++i) {
-			tokenizado = tokenizar(str, tabla_ops);
-			str = tokenizado.resto;
-			Token token = tokenizado.token;
-
-			expresion.tokens[i] = token;
-		}
+		Expresion* expresion = /* pila_pop(&p) */ NULL;
 
 		return (Parseado){str, (Sentencia){S_CARGA, alias, alias_n, expresion}};
 		} break;

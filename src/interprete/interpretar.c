@@ -23,7 +23,7 @@ struct EntradaTablaAlias {
 	char* input;
 	char const* alias;
 	int alias_n;
-	ExpresionPostfija expresion;
+	Expresion* expresion;
 };
 
 typedef struct {
@@ -38,7 +38,7 @@ EntradaTablaAlias* ta_encontrar(TablaAlias* tabla, char const* alias, int alias_
 }
 
 // limpia 'input' y 'expresion'
-EntradaTablaAlias* ta_insertar(TablaAlias* tabla, char* input, char const* alias, int alias_n, ExpresionPostfija expresion) {
+EntradaTablaAlias* ta_insertar(TablaAlias* tabla, char* input, char const* alias, int alias_n, Expresion* expresion) {
 	EntradaTablaAlias* nuevo = malloc(sizeof(*nuevo));
 	*nuevo = (EntradaTablaAlias) {
 		.sig = tabla->entradas,
@@ -52,7 +52,7 @@ EntradaTablaAlias* ta_insertar(TablaAlias* tabla, char* input, char const* alias
 }
 
 // limpia 'input' y 'expresion'
-EntradaTablaAlias* ta_insertar_o_reemplazar(TablaAlias* tabla, char* input, char const* alias, int alias_n, ExpresionPostfija expresion) {
+EntradaTablaAlias* ta_insertar_o_reemplazar(TablaAlias* tabla, char* input, char const* alias, int alias_n, Expresion* expresion) {
 	EntradaTablaAlias* encontrado = ta_encontrar(tabla, alias, alias_n);
 
 	if (encontrado == NULL)
@@ -62,7 +62,7 @@ EntradaTablaAlias* ta_insertar_o_reemplazar(TablaAlias* tabla, char* input, char
 	encontrado->input = input;
 	encontrado->alias = alias;
 
-	expresion_postfija_limpiar(&encontrado->expresion);
+	expresion_limpiar(encontrado->expresion);
 	encontrado->expresion = expresion;
 
 	return encontrado;
@@ -72,7 +72,7 @@ void ta_limpiar(TablaAlias* tabla) {
 	EntradaTablaAlias* it = tabla->entradas;
 	while (it) {
 		EntradaTablaAlias* sig = it->sig;
-		expresion_postfija_limpiar(&it->expresion);
+		expresion_limpiar(it->expresion);
 		free(it->input);
 		free(it);
 		it = sig;
@@ -135,7 +135,7 @@ void imprimir(Entorno* entorno, char const* alias, int alias_n) {
 }
 
 // limpia 'input' y 'expresion'
-void cargar(Entorno* entorno, char* input, char const* alias, int alias_n, ExpresionPostfija expresion) {
+void cargar(Entorno* entorno, char* input, char const* alias, int alias_n, Expresion* expresion) {
 	ta_insertar_o_reemplazar(&entorno->aliases, input, alias, alias_n, expresion);
 }
 
