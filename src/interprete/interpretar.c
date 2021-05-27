@@ -117,11 +117,10 @@ static char* robar_input(Entorno* entorno) {
 	return buffer;
 }
 
-static void entorno_limpiar(Entorno* entorno) {
+static void entorno_limpiar_datos(Entorno* entorno) {
 	if (entorno->buffer_input != NULL)
 		descartar_input(entorno);
 	ta_limpiar(&entorno->aliases);
-	free(entorno);
 	return;
 }
 
@@ -162,7 +161,7 @@ void interpretar(TablaOps* tabla_ops) {
 			puts("Error, saliendo."); // NICETOHAVE mejor error
 		// fallthrough
 		case S_SALIR:
-			entorno_limpiar(&entorno);
+			entorno_limpiar_datos(&entorno);
 			return;
 		}
 	}
