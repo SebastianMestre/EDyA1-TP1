@@ -19,3 +19,7 @@ build/expresion_postfija.o: $(INTDIR)/expresion_postfija.c $(INTDIR)/expresion_p
 build/%.o: src/%.c
 	mkdir -p build
 	gcc -fno-omit-frame-pointer -g -c -o $@ $<
+
+build/%.o: $(INTDIR)/%.c
+	mkdir -p build
+	gcc -fno-omit-frame-pointer -g -c -o $@ $<

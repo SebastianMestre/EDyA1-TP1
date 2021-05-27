@@ -56,6 +56,34 @@ static Parseado invalido(char const* str) {
 	return (Parseado){str, (Sentencia){S_INVALIDO}};
 }
 
+typedef struct EntradaPilaDeExpresiones EntradaPilaDeExpresiones;
+struct EntradaPilaDeExpresiones {
+	EntradaPilaDeExpresiones* sig;
+	Expresion* expresion;
+};
+
+typedef struct PilaDeExpresiones {
+	EntradaPilaDeExpresiones* entradas;
+} PilaDeExpresiones;
+
+void pila_de_expresiones_push(PilaDeExpresiones* pila, Expresion* expresion) {
+	EntradaPilaDeExpresiones* entrada = malloc(sizeof(*entrada));
+	*entrada = (EntradaPilaDeExpresiones){
+		.sig = pila->entradas,
+		.expresion = expresion
+	};
+	pila->entradas = entrada;
+}
+
+Expresion* pila_de_expresiones_pop(PilaDeExpresiones* pila) {
+	if (pila->entradas == NULL) return NULL;
+	Expresion* result = pila->entradas->expresion;
+	EntradaPilaDeExpresiones* entrada = pila->entradas;
+	pila->entradas = entrada->sig;
+	free(entrada);
+	return result;
+}
+
 Parseado parsear(char const* str, TablaOps* tabla_ops) {
 	Tokenizado tokenizado = tokenizar(str, tabla_ops);
 	str = tokenizado.resto;
@@ -101,7 +129,8 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 		// la memoria necesaria para guardarlos
 		// Y la segunda para guardarlos en la memoria que reserve
 
-		// Pila p = pila_crear();
+		// {} inicializa con 0s, lo cual es el estado inicial correcto
+		PilaDeExpresiones p = {};
 		// parseo y, mientras, voy validando
 		while (1) {
 			tokenizado = tokenizar(str, tabla_ops);
@@ -115,24 +144,24 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 			case T_NUMERO: {
 				Expresion* exp = malloc(sizeof(*exp));
 				*exp = (Expresion){X_NUMERO, token.valor};
-				// pila_push(&p, exp);
+				pila_de_expresiones_push(&p, exp);
 				} break;
 			case T_NOMBRE: {
 				Expresion* exp = malloc(sizeof(*exp));
 				*exp = (Expresion){X_ALIAS, token.valor, token.inicio};
-				// pila_push(&p, exp);
+				pila_de_expresiones_push(&p, exp);
 				} break;
 			case T_OPERADOR: {
 				Expresion* exp = malloc(sizeof(*exp));
-				Expresion* arg1 = /* pila_pop(&p); */ NULL;
-				Expresion* arg2 = /* token.op->aridad == 2 ? pila_pop(&p) : */ NULL;
+				Expresion* arg1 = pila_de_expresiones_pop(&p);
+				Expresion* arg2 = token.op->aridad == 2 ? pila_de_expresiones_pop(&p) : NULL;
 				*exp = (Expresion){
 					X_OPERACION,
 					0, NULL,
 					{arg1, arg2},
 					token.op->eval
 				};
-				// pila_push(&p, exp);
+				pila_de_expresiones_push(&p, exp);
 				} break;
 			default:
 				// TODO limpiar
@@ -140,7 +169,7 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 			}
 		}
 
-		Expresion* expresion = /* pila_pop(&p) */ NULL;
+		Expresion* expresion = pila_de_expresiones_pop(&p);
 
 		return (Parseado){str, (Sentencia){S_CARGA, alias, alias_n, expresion}};
 		} break;
