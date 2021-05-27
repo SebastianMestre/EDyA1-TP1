@@ -1,7 +1,7 @@
 #ifndef EXPRESION_H
 #define EXPRESION_H
 
-#include "funcion_evaluacion.h"
+#include "..\funcion_evaluacion.h"
 
 typedef struct Expresion Expresion;
 
