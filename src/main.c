@@ -1,6 +1,6 @@
 #include "tabla_ops.h"
 #include "operadores.h"
-#include "interpretar.h"
+#include "interprete/interpretar.h"
 
 int main (int argc, char** argv) {
 	TablaOps tabla = tabla_ops_crear();

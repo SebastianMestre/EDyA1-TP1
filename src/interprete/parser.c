@@ -1,6 +1,6 @@
 #include "parser.h"
 
-#include "..\tabla_ops.h"
+#include "../tabla_ops.h"
 #include "expresion.h"
 
 #include <ctype.h>

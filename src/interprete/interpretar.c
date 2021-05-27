@@ -30,7 +30,7 @@ typedef struct {
 	EntradaTablaAlias* entradas;
 } TablaAlias;
 
-EntradaTablaAlias* ta_encontrar(TablaAlias* tabla, char const* alias, int alias_n) {
+static EntradaTablaAlias* ta_encontrar(TablaAlias* tabla, char const* alias, int alias_n) {
 	for (EntradaTablaAlias* it = tabla->entradas; it; it = it->sig)
 		if (it->alias_n == alias_n && memcmp(it->alias, alias, alias_n) == 0)
 			return it;
@@ -38,7 +38,7 @@ EntradaTablaAlias* ta_encontrar(TablaAlias* tabla, char const* alias, int alias_
 }
 
 // limpia 'input' y 'expresion'
-EntradaTablaAlias* ta_insertar(TablaAlias* tabla, char* input, char const* alias, int alias_n, Expresion* expresion) {
+static EntradaTablaAlias* ta_insertar(TablaAlias* tabla, char* input, char const* alias, int alias_n, Expresion* expresion) {
 	EntradaTablaAlias* nuevo = malloc(sizeof(*nuevo));
 	*nuevo = (EntradaTablaAlias) {
 		.sig = tabla->entradas,
@@ -52,7 +52,7 @@ EntradaTablaAlias* ta_insertar(TablaAlias* tabla, char* input, char const* alias
 }
 
 // limpia 'input' y 'expresion'
-EntradaTablaAlias* ta_insertar_o_reemplazar(TablaAlias* tabla, char* input, char const* alias, int alias_n, Expresion* expresion) {
+static EntradaTablaAlias* ta_insertar_o_reemplazar(TablaAlias* tabla, char* input, char const* alias, int alias_n, Expresion* expresion) {
 	EntradaTablaAlias* encontrado = ta_encontrar(tabla, alias, alias_n);
 
 	if (encontrado == NULL)
@@ -68,7 +68,7 @@ EntradaTablaAlias* ta_insertar_o_reemplazar(TablaAlias* tabla, char* input, char
 	return encontrado;
 }
 
-void ta_limpiar(TablaAlias* tabla) {
+static void ta_limpiar(TablaAlias* tabla) {
 	EntradaTablaAlias* it = tabla->entradas;
 	while (it) {
 		EntradaTablaAlias* sig = it->sig;
@@ -87,11 +87,11 @@ typedef struct {
 	int tamano_buffer_input;
 } Entorno;
 
-Entorno entorno_crear() {
+static Entorno entorno_crear() {
 	return (Entorno){};
 }
 
-void leer_input(Entorno* entorno) {
+static void leer_input(Entorno* entorno) {
 	// NICETOHAVE que se banque renglones arbitrariamente grandes, usando un
 	// buffer que crece dinamicamente si hace falta
 	if (entorno->buffer_input == NULL) {
@@ -103,39 +103,39 @@ void leer_input(Entorno* entorno) {
 	fgets(entorno->buffer_input, 1023, stdin);
 }
 
-void descartar_input(Entorno* entorno) {
+static void descartar_input(Entorno* entorno) {
 	assert(entorno != NULL);
 	free(entorno->buffer_input);
 	entorno->buffer_input = NULL;
 	entorno->tamano_buffer_input = 0;
 }
 
-char* robar_input(Entorno* entorno) {
+static char* robar_input(Entorno* entorno) {
 	char* buffer = entorno->buffer_input;
 	entorno->buffer_input = NULL;
 	entorno->tamano_buffer_input = 0;
 	return buffer;
 }
 
-void entorno_limpiar(Entorno* entorno) {
+static void entorno_limpiar(Entorno* entorno) {
 	if (entorno->buffer_input != NULL)
 		descartar_input(entorno);
 	ta_limpiar(&entorno->aliases);
-	// TODO
+	free(entorno);
 	return;
 }
 
-int evaluar(Entorno* entorno, char const* alias, int alias_n) {
+static int evaluar(Entorno* entorno, char const* alias, int alias_n) {
 	// TODO
 	return 0;
 }
 
-void imprimir(Entorno* entorno, char const* alias, int alias_n) {
+static void imprimir(Entorno* entorno, char const* alias, int alias_n) {
 	// TODO
 }
 
 // limpia 'input' y 'expresion'
-void cargar(Entorno* entorno, char* input, char const* alias, int alias_n, Expresion* expresion) {
+static void cargar(Entorno* entorno, char* input, char const* alias, int alias_n, Expresion* expresion) {
 	ta_insertar_o_reemplazar(&entorno->aliases, input, alias, alias_n, expresion);
 }
 

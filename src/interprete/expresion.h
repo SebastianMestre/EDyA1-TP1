@@ -1,7 +1,7 @@
 #ifndef EXPRESION_H
 #define EXPRESION_H
 
-#include "..\funcion_evaluacion.h"
+#include "../funcion_evaluacion.h"
 
 typedef struct Expresion Expresion;
 
@@ -21,7 +21,10 @@ struct Expresion {
 	FuncionEvaluacion eval; // para guardar el tipo de operacion
 };
 
-// no hace free de alias
+/**
+ * Libera recursivamente el espacio de memoria ocupado por el arbol de
+ * expresiones, sin liberar el puntero "alias".  
+ */
 void expresion_limpiar(Expresion* expresion);
 
 #endif // EXPRESION_H
