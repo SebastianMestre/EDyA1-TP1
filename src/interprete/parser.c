@@ -84,6 +84,16 @@ Expresion* pila_de_expresiones_pop(PilaDeExpresiones* pila) {
 	return result;
 }
 
+void pila_de_expresiones_limpiar_datos(PilaDeExpresiones* pila) {
+	EntradaPilaDeExpresiones* it = pila->entradas;
+	while (it) {
+		EntradaPilaDeExpresiones* sig = it->sig;
+		expresion_limpiar(it->expresion);
+		free(it);
+		it = sig;
+	}
+}
+
 Parseado parsear(char const* str, TablaOps* tabla_ops) {
 	Tokenizado tokenizado = tokenizar(str, tabla_ops);
 	str = tokenizado.resto;
@@ -164,12 +174,22 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 				pila_de_expresiones_push(&p, exp);
 				} break;
 			default:
-				// TODO limpiar
+				pila_de_expresiones_limpiar_datos(&p);
 				return invalido(str);
 			}
 		}
 
 		Expresion* expresion = pila_de_expresiones_pop(&p);
+
+		{
+			Expresion* expresion_extra = pila_de_expresiones_pop(&p);
+			if (expresion_extra != NULL) {
+				expresion_limpiar(expresion);
+				expresion_limpiar(expresion_extra);
+				pila_de_expresiones_limpiar_datos(&p);
+				return invalido(str);
+			}
+		}
 
 		return (Parseado){str, (Sentencia){S_CARGA, alias, alias_n, expresion}};
 		} break;
