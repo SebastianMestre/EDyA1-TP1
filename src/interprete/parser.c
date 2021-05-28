@@ -192,9 +192,18 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 				pila_de_expresiones_push(&p, exp);
 				} break;
 			case T_OPERADOR: {
-				Expresion* exp = malloc(sizeof(*exp));
 				Expresion* arg1 = pila_de_expresiones_pop(&p);
-				Expresion* arg2 = token.op->aridad == 2 ? pila_de_expresiones_pop(&p) : NULL;
+				if (arg1 == NULL)
+					goto fail_arg1;
+
+				Expresion* arg2 = NULL;
+				if (token.op->aridad == 2) {
+					arg2 = pila_de_expresiones_pop(&p);
+					if (arg2 == NULL)
+						goto fail_arg2;
+				}
+
+				Expresion* exp = malloc(sizeof(*exp));
 				*exp = (Expresion){
 					X_OPERACION,
 					0, NULL,
@@ -202,6 +211,15 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 					token.op
 				};
 				pila_de_expresiones_push(&p, exp);
+				break;
+
+				fail_arg2:
+				expresion_limpiar(arg1);
+
+				fail_arg1:
+				pila_de_expresiones_limpiar_datos(&p);
+				return invalido(str);
+
 				} break;
 			default:
 				pila_de_expresiones_limpiar_datos(&p);
