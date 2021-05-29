@@ -134,7 +134,6 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 		break;
 
 	case T_EVALUAR:
-		break;
 		tokenizado = tokenizar(str, tabla_ops);
 		str = tokenizado.resto;
 		if (tokenizado.token.tag != T_NOMBRE)
