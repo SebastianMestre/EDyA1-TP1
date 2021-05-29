@@ -96,7 +96,7 @@ typedef struct PilaDeExpresiones {
 	EntradaPilaDeExpresiones* entradas;
 } PilaDeExpresiones;
 
-void pila_de_expresiones_push(PilaDeExpresiones* pila, Expresion* expresion) {
+static void pila_de_expresiones_push(PilaDeExpresiones* pila, Expresion* expresion) {
 	EntradaPilaDeExpresiones* entrada = malloc(sizeof(*entrada));
 	*entrada = (EntradaPilaDeExpresiones){
 		.sig = pila->entradas,
@@ -105,7 +105,7 @@ void pila_de_expresiones_push(PilaDeExpresiones* pila, Expresion* expresion) {
 	pila->entradas = entrada;
 }
 
-Expresion* pila_de_expresiones_pop(PilaDeExpresiones* pila) {
+static Expresion* pila_de_expresiones_pop(PilaDeExpresiones* pila) {
 	if (pila->entradas == NULL) return NULL;
 	Expresion* result = pila->entradas->expresion;
 	EntradaPilaDeExpresiones* entrada = pila->entradas;
@@ -114,7 +114,13 @@ Expresion* pila_de_expresiones_pop(PilaDeExpresiones* pila) {
 	return result;
 }
 
-void pila_de_expresiones_limpiar_datos(PilaDeExpresiones* pila) {
+static Expresion* pila_de_expresiones_top(PilaDeExpresiones* pila) {
+	if (pila->entradas == NULL)
+		return NULL;
+	return pila->entradas->expresion;
+}
+
+static void pila_de_expresiones_limpiar_datos(PilaDeExpresiones* pila) {
 	EntradaPilaDeExpresiones* it = pila->entradas;
 	while (it) {
 		EntradaPilaDeExpresiones* sig = it->sig;
