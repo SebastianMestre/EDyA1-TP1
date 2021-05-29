@@ -127,6 +127,7 @@ static void entorno_limpiar_datos(Entorno* entorno) {
 }
 
 // TODO: testear evaluar_alias (y evaluar_arbol).
+static int evaluar_arbol(Expresion* expresion, Entorno* entorno);
 
 // encuentra la expresion correspondiente y llama a evaluar_arbol
 static int evaluar_alias(Entorno* entorno, char const* alias, int alias_n) {
