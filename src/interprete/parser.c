@@ -189,14 +189,10 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 
 			switch (token.tag) {
 			case T_NUMERO: {
-				Expresion* exp = malloc(sizeof(*exp));
-				*exp = (Expresion){X_NUMERO, token.valor};
-				pila_de_expresiones_push(&p, exp);
+				pila_de_expresiones_push(&p, expresion_numero(token.valor));
 				} break;
 			case T_NOMBRE: {
-				Expresion* exp = malloc(sizeof(*exp));
-				*exp = (Expresion){X_ALIAS, token.valor, token.inicio};
-				pila_de_expresiones_push(&p, exp);
+				pila_de_expresiones_push(&p, expresion_alias(token.inicio, token.valor));
 				} break;
 			case T_OPERADOR: {
 				Expresion* arg1 = pila_de_expresiones_pop(&p);
@@ -210,14 +206,7 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 						goto fail_arg2;
 				}
 
-				Expresion* exp = malloc(sizeof(*exp));
-				*exp = (Expresion){
-					X_OPERACION,
-					0, NULL,
-					{arg1, arg2},
-					token.op
-				};
-				pila_de_expresiones_push(&p, exp);
+				pila_de_expresiones_push(&p, expresion_operacion(token.op, arg1, arg2));
 				break;
 
 				fail_arg2:
