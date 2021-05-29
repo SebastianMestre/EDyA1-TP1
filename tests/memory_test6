@@ -1,0 +1,5 @@
+a = cargar 1 1 + 1 1 + *
+evaluar a
+b = cargar 2 1 + a *
+evaluar b
+salir
