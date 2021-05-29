@@ -1,11 +1,11 @@
 #include "operadores.h"
 
 int suma(int* args) {
-	return args[0] + args[1];
+	return args[1] + args[0];
 }
 
 int resta(int* args) {
-	return args[0] - args[1];
+	return args[1] - args[0];
 }
 
 int opuesto(int* args) {
@@ -13,20 +13,20 @@ int opuesto(int* args) {
 }
 
 int producto(int* args) {
-	return args[0] * args[1];
+	return args[1] * args[0];
 }
 
 int division(int* args) {
-	return args[0] / args[1];
+	return args[1] / args[0];
 }
 
 int modulo(int* args) {
-	return args[0] % args[1];
+	return args[1] % args[0];
 }
 
 int potencia(int* args) {
-	int b = args[0];
-	int n = args[1];
+	int b = args[1];
+	int n = args[0];
 	if (n < 0)
 		return b > 1 ? 0 : 1;
 	int k = 1;
