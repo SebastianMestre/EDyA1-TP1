@@ -22,6 +22,10 @@ struct Expresion {
 	EntradaTablaOps* op; // para guardar la informacion de la operacion (de haber una).
 };
 
+Expresion* expresion_numero(int valor);
+Expresion* expresion_alias(char const* alias, int alias_n);
+Expresion* expresion_operacion(EntradaTablaOps* op, Expresion* sub0, Expresion* sub1);
+
 /**
  * Libera recursivamente el espacio de memoria ocupado por el arbol de
  * expresiones, sin liberar el puntero "alias".  
