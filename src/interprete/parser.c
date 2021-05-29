@@ -225,14 +225,10 @@ Parseado parsear(char const* str, TablaOps* tabla_ops) {
 
 		Expresion* expresion = pila_de_expresiones_pop(&p);
 
-		{
-			Expresion* expresion_extra = pila_de_expresiones_pop(&p);
-			if (expresion_extra != NULL) {
-				expresion_limpiar(expresion);
-				expresion_limpiar(expresion_extra);
-				pila_de_expresiones_limpiar_datos(&p);
-				return invalido(str);
-			}
+		if (pila_de_expresiones_top(&p) != NULL) {
+			expresion_limpiar(expresion);
+			pila_de_expresiones_limpiar_datos(&p);
+			return invalido(str);
 		}
 
 		return (Parseado){str, (Sentencia){S_CARGA, alias, alias_n, expresion}};
